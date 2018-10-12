@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .container {
+            width: 600px;
+            display: flex;
+        }
+        .operations {
+            flex: 1;
+        }
+        .results {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<input type="text">
+<div class="container">
+    <div class="operations">
+        <div>Операции:</div>
+    </div>
+    <div class="results">
+        <div>Результаты:</div>
+    </div>
+</div>
+</body>
+<script>
+    const variables = {};
+    const input = document.getElementsByTagName("input")[0];
+    const operationsContainer = document.getElementsByClassName("operations")[0];
+    const resultsContainer = document.getElementsByClassName("results")[0];
+    input.onkeydown = function (e) {
+        if (e.code === "Enter") {
+            let result = parseValue(input.value);
+            let operationElement = document.createElement("div");
+            let resultElement = document.createElement("div");
+            operationElement.innerHTML = input.value;
+            resultElement.innerHTML = result;
+            operationsContainer.appendChild(operationElement);
+            resultsContainer.appendChild(resultElement);
+            input.value = "";
+        }
+    };
+
+    function parseValue(value) {
+        let operator;
+        let i = 0;
+        while (i < value.length) {
+            if ("+-=".includes(value[i])) {
+                operator = value[i];
+                break;
+            }
+            i++;
+        }
+
+        if (!operator) {
+            if (variables[value]) {
+                return variables[value];
+            } else if (!isNaN(value)) {
+                return parseInt(value);
+            } else {
+                return "Unexpected value";
+            }
+        } else {
+            let leftOperand = value.substr(0, i).trim();
+            let rightOperand = value.substr(i + 1).trim();
+            switch (operator) {
+                case "+":
+                    return parseValue(leftOperand) + parseValue(rightOperand);
+                case "-":
+                    return parseValue(leftOperand) - parseValue(rightOperand);
+                case "=":
+                    variables[leftOperand] = parseValue(rightOperand);
+                    return `${leftOperand} = ${variables[leftOperand]}`;
+            }
+        }
+    }
+</script>
+</html>
